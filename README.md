@@ -1,4 +1,4 @@
-# Venti BotUI
+# WTP UI
 
 This application provides a graphical interface for launching executables from a folder and controlling a bot via dropdowns, sliders, and sensor feedback.
 
