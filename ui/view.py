@@ -1,10 +1,10 @@
-from PyQt6.QtWidgets import (
+from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QTabWidget, QScrollArea, QStackedWidget,
     QPushButton, QComboBox, QTextEdit, QHBoxLayout, QFileDialog,
     QLabel, QStatusBar
 )
-from PyQt6.QtGui import QTextCursor
-from PyQt6.QtCore import pyqtSignal
+from PyQt5.QtGui import QTextCursor
+from PyQt5.QtCore import pyqtSignal
 
 from ui.stats_main import StatsMainPage
 from ui.movables_page import MovablesPage
@@ -15,7 +15,7 @@ class MainView(QWidget):
     folder_selected = pyqtSignal(str)
 
     def __init__(self):
-        super().__init__()
+        super(MainView, self).__init__()
         self.setWindowTitle("WeThePeople Dashboard")
         self.resize(800, 600)
 
@@ -107,7 +107,7 @@ class MainView(QWidget):
 
     def append_output(self, html_line: str):
         cursor = self.output_field.textCursor()
-        cursor.movePosition(QTextCursor.MoveOperation.End)
+        cursor.movePosition(QTextCursor.End)
         cursor.insertHtml(html_line + "<br />")
         self.output_field.setTextCursor(cursor)
         self.output_field.ensureCursorVisible()

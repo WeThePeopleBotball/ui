@@ -1,21 +1,22 @@
-from PyQt6.QtWidgets import (
+from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QFormLayout, QLabel,
     QPushButton, QHBoxLayout, QSizePolicy
 )
-from PyQt6.QtCore import pyqtSignal
+from PyQt5.QtCore import pyqtSignal
 
 
-def create_label(text: str | None = None):
+def create_label(text=None):
     label = QLabel(text)
     label.setWordWrap(True)
     return label
+
 
 class StatsMainPage(QWidget):
     theme_toggled = pyqtSignal()
     exit_requested = pyqtSignal()
 
     def __init__(self):
-        super().__init__()
+        super(StatsMainPage, self).__init__()
 
         self.device_name_label = create_label()
         self.os_info_label = create_label()
@@ -45,7 +46,7 @@ class StatsMainPage(QWidget):
         self.exit_button.clicked.connect(self.exit_requested.emit)
 
         for btn in (self.toggle_theme_button, self.exit_button):
-            btn.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+            btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
 
         theme_exit_row.addWidget(self.toggle_theme_button)
         theme_exit_row.addWidget(self.exit_button)
@@ -53,16 +54,16 @@ class StatsMainPage(QWidget):
 
         layout.addStretch()
 
+        # Navigation buttons
         button_row = QHBoxLayout()
         self.movables_button = QPushButton("Movables")
         self.sensors_button = QPushButton("Sensors")
 
         for btn in (self.movables_button, self.sensors_button):
-            btn.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+            btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
 
         button_row.addWidget(self.movables_button)
         button_row.addWidget(self.sensors_button)
         layout.addLayout(button_row)
 
         self.setLayout(layout)
-

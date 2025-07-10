@@ -1,18 +1,18 @@
-from PyQt6.QtWidgets import (
+from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QPushButton, QComboBox, QTextEdit,
     QHBoxLayout, QFileDialog, QLabel, QStatusBar, QTabWidget,
     QFormLayout, QSlider, QTableWidget, QTableWidgetItem,
     QHeaderView, QScrollArea, QFrame, QStackedWidget, QSizePolicy
 )
-from PyQt6.QtGui import QTextCursor
-from PyQt6.QtCore import pyqtSignal, Qt, QPropertyAnimation, QRect, QEasingCurve
+from PyQt5.QtGui import QTextCursor
+from PyQt5.QtCore import pyqtSignal, Qt, QPropertyAnimation, QRect, QEasingCurve
 
 
 class MainView(QWidget):
     folder_selected = pyqtSignal(str)
 
     def __init__(self):
-        super().__init__()
+        super(MainView, self).__init__()
         self.setWindowTitle("WTP")
         self.resize(800, 600)
 
@@ -30,7 +30,6 @@ class MainView(QWidget):
         layout = QVBoxLayout(self)
         layout.addWidget(self.tabs)
 
-    # === Launcher Tab ===
     def init_launcher_tab(self):
         layout = QVBoxLayout()
 
@@ -66,18 +65,18 @@ class MainView(QWidget):
 
         self.launcher_tab.setLayout(layout)
 
-    def append_output(self, html_line: str):
+    def append_output(self, html_line):
         cursor = self.output_field.textCursor()
-        cursor.movePosition(QTextCursor.MoveOperation.End)
+        cursor.movePosition(QTextCursor.End)
         cursor.insertHtml(html_line + "<br />")
         self.output_field.setTextCursor(cursor)
         self.output_field.ensureCursorVisible()
 
-    def update_program_list(self, programs: list[str]):
+    def update_program_list(self, programs):
         self.program_selector.clear()
         self.program_selector.addItems(programs)
 
-    def set_folder_path(self, folder: str):
+    def set_folder_path(self, folder):
         self.folder_status_label.setText(f"Folder: {folder}")
 
     def select_folder(self):
@@ -86,7 +85,6 @@ class MainView(QWidget):
             self.folder_selected.emit(folder)
             self.set_folder_path(folder)
 
-    # === Stats Tab ===
     def init_stats_tab(self):
         self.stats_stack = QStackedWidget(self.stats_tab_widget)
         outer_layout = QVBoxLayout(self.stats_tab_widget)
@@ -128,7 +126,7 @@ class MainView(QWidget):
         motor_row.addWidget(QLabel("Motor:"))
         self.motor_dropdown = QComboBox()
         self.motor_dropdown.addItems([str(i + 1) for i in range(4)])
-        self.motor_slider = QSlider(Qt.Orientation.Horizontal)
+        self.motor_slider = QSlider(Qt.Horizontal)
         self.motor_slider.setRange(0, 100)
         motor_row.addWidget(self.motor_dropdown)
         motor_row.addWidget(self.motor_slider)
@@ -138,14 +136,14 @@ class MainView(QWidget):
         servo_row.addWidget(QLabel("Servo:"))
         self.servo_dropdown = QComboBox()
         self.servo_dropdown.addItems([str(i + 1) for i in range(4)])
-        self.servo_slider = QSlider(Qt.Orientation.Horizontal)
+        self.servo_slider = QSlider(Qt.Horizontal)
         self.servo_slider.setRange(0, 180)
         servo_row.addWidget(self.servo_dropdown)
         servo_row.addWidget(self.servo_slider)
         movables_layout.addLayout(servo_row)
 
         back_btn_m = QPushButton("Back")
-        back_btn_m.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        back_btn_m.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         back_btn_m.clicked.connect(lambda: self.animate_stats_transition(self.stats_main_page, "right"))
         movables_layout.addWidget(self._hline())
         movables_layout.addWidget(back_btn_m)
@@ -168,16 +166,16 @@ class MainView(QWidget):
             self.sensor_table.setItem(i, 1, QTableWidgetItem("—"))
 
         self.sensor_table.horizontalHeader().setStretchLastSection(True)
-        self.sensor_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self.sensor_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.sensor_table.verticalHeader().setVisible(False)
-        self.sensor_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
-        self.sensor_table.setSelectionMode(QTableWidget.SelectionMode.NoSelection)
+        self.sensor_table.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.sensor_table.setSelectionMode(QTableWidget.NoSelection)
 
         sensors_layout.addWidget(QLabel("Sensors:"))
         sensors_layout.addWidget(self.sensor_table)
 
         back_btn_s = QPushButton("Back")
-        back_btn_s.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        back_btn_s.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         back_btn_s.clicked.connect(lambda: self.animate_stats_transition(self.stats_main_page, "right"))
         sensors_layout.addWidget(self._hline())
         sensors_layout.addWidget(back_btn_s)
@@ -189,7 +187,7 @@ class MainView(QWidget):
         self.stats_tab_scroll.setWidgetResizable(True)
         self.stats_tab_scroll.setWidget(self.stats_tab_widget)
 
-    def animate_stats_transition(self, target_widget: QWidget, direction: str = "left"):
+    def animate_stats_transition(self, target_widget, direction="left"):
         current_index = self.stats_stack.currentIndex()
         target_index = self.stats_stack.indexOf(target_widget)
         if current_index == target_index:
@@ -214,14 +212,14 @@ class MainView(QWidget):
         anim_new.setStartValue(QRect(offset, 0, w, h))
         anim_new.setEndValue(QRect(0, 0, w, h))
 
-        anim_old.setEasingCurve(QEasingCurve.Type.InOutCubic)
-        anim_new.setEasingCurve(QEasingCurve.Type.InOutCubic)
+        anim_old.setEasingCurve(QEasingCurve.InOutCubic)
+        anim_new.setEasingCurve(QEasingCurve.InOutCubic)
 
         self._animations = (anim_old, anim_new)
         anim_old.start()
         anim_new.start()
 
-    def update_stats(self, stats: dict):
+    def update_stats(self, stats):
         self.device_name_label.setText(stats["device_name"])
         self.os_info_label.setText(stats["os_info"])
         self.ssid_label.setText(stats["ssid"])
@@ -231,7 +229,7 @@ class MainView(QWidget):
 
     def _hline(self):
         line = QFrame()
-        line.setFrameShape(QFrame.Shape.HLine)
-        line.setFrameShadow(QFrame.Shadow.Sunken)
+        line.setFrameShape(QFrame.HLine)
+        line.setFrameShadow(QFrame.Sunken)
         line.setStyleSheet("margin-top: 12px; margin-bottom: 12px;")
         return line

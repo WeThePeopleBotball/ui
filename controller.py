@@ -1,5 +1,5 @@
-from PyQt6.QtCore import QTimer
-from PyQt6.QtWidgets import QApplication
+from PyQt5.QtCore import QTimer
+from PyQt5.QtWidgets import QApplication
 from model import AppModel
 from ui.view import MainView
 from socks import SocksServer, send_unix
@@ -7,6 +7,7 @@ from socks import SocksServer, send_unix
 import sys
 import asyncio
 import threading
+
 
 class MainController:
     def __init__(self):
@@ -29,7 +30,7 @@ class MainController:
 
         # Refresh stats every 60 seconds
         self.stats_timer.timeout.connect(self.update_stats)
-        self.stats_timer.start(60_000)
+        self.stats_timer.start(60000)
         self.update_stats()
 
         self.view.show()
@@ -39,13 +40,12 @@ class MainController:
     def start_socks_server(self):
         self.socks_server.add_handler("set_button_text", self.handle_set_button_text)
 
-        # Run asyncio server in background thread
         def run():
             asyncio.run(self.socks_server.start())
 
         threading.Thread(target=run, daemon=True).start()
 
-    def handle_set_button_text(self, data: dict) -> dict:
+    def handle_set_button_text(self, data):
         text = data.get("text", "")
         self.view.calibrate_button.setText(text)
         return {}
@@ -73,11 +73,10 @@ class MainController:
         self.view.update_stats(stats)
 
     def run(self):
-        sys.exit(self.app.exec())
+        sys.exit(self.app.exec_())  # Note: PyQt5 uses exec_()
 
     def on_calibrate(self):
         try:
             send_unix("button_pressed", {}, "/tmp/button.sock")
         except:
             pass
-

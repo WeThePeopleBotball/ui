@@ -1,17 +1,18 @@
 import os
 import subprocess
-from PyQt6.QtCore import QThread, pyqtSignal
 import socket
 import platform
 import psutil
 import glob
+
+from PyQt5.QtCore import QThread, pyqtSignal
 
 
 class OutputReader(QThread):
     output_signal = pyqtSignal(str)
 
     def __init__(self, process):
-        super().__init__()
+        super(OutputReader, self).__init__()
         self.process = process
         self.running = True
 
@@ -22,10 +23,9 @@ class OutputReader(QThread):
             colored_line = self.colorize(line.rstrip())
             self.output_signal.emit(colored_line)
 
-
-    def colorize(self, text: str) -> str:
+    def colorize(self, text):
         lowered = text.lower()
-    
+
         error_keywords = [
             "error", "failed", "exception", "traceback", "critical", "fatal",
             "panic", "abort", "crash", "unhandled"
@@ -39,17 +39,17 @@ class OutputReader(QThread):
         debug_keywords = [
             "debug", "verbose", "trace", "log", "step", "state", "internal"
         ]
-    
+
         if any(word in lowered for word in error_keywords):
-            return f'<span style="color:red;">{text}</span>'
+            return '<span style="color:red;">{}</span>'.format(text)
         elif any(word in lowered for word in warning_keywords):
-            return f'<span style="color:yellow;">{text}</span>'
+            return '<span style="color:yellow;">{}</span>'.format(text)
         elif any(word in lowered for word in debug_keywords):
-            return f'<span style="color:lightblue;">{text}</span>'
+            return '<span style="color:lightblue;">{}</span>'.format(text)
         elif any(word in lowered for word in info_keywords):
-            return f'<span style="color:lightgreen;">{text}</span>'
+            return '<span style="color:lightgreen;">{}</span>'.format(text)
         else:
-            return f'<span style="color:white;">{text}</span>'
+            return '<span style="color:white;">{}</span>'.format(text)
 
     def stop(self):
         self.running = False
@@ -114,16 +114,16 @@ class AppModel:
             output = subprocess.check_output(["nmcli", "-t", "-f", "active,ssid", "dev", "wifi"])
             lines = output.decode().splitlines()
             for line in lines:
-                active, ssid = line.strip().split(":")
-                if active == "yes":
-                    return ssid
+                parts = line.strip().split(":")
+                if len(parts) == 2 and parts[0] == "yes":
+                    return parts[1]
         except Exception:
             pass
         return None
 
-    def _get_wifi_password(self, ssid: str):
+    def _get_wifi_password(self, ssid):
         try:
-            pattern = f"/etc/NetworkManager/system-connections/{ssid}*"
+            pattern = "/etc/NetworkManager/system-connections/{}*".format(ssid)
             files = glob.glob(pattern)
             for file in files:
                 with open(file, "r", encoding="utf-8", errors="ignore") as f:
@@ -131,7 +131,7 @@ class AppModel:
                         if line.strip().startswith("psk="):
                             return line.strip().split("=", 1)[1]
         except Exception as e:
-            return f"(Error: {e})"
+            return "(Error: {})".format(e)
         return "Not found"
 
     def _get_battery_status(self):
@@ -140,21 +140,21 @@ class AppModel:
             if battery:
                 percent = int(round(battery.percent))
                 icon = self._get_battery_icon(percent)
-                return f"{icon} {percent}% {'(Charging)' if battery.power_plugged else '(Not Charging)'}"
+                return "{} {}% {}".format(icon, percent,
+                    "(Charging)" if battery.power_plugged else "(Not Charging)")
         except Exception:
             pass
         return "N/A"
 
     def _get_battery_icon(self, percent):
         if percent >= 80:
-            return "🔋"  # Full
+            return "🔋"
         elif percent >= 50:
-            return "🔋"  # Medium
+            return "🔋"
         elif percent >= 20:
-            return "🪫"  # Low
+            return "🪫"
         else:
-            return "❗"  # Critical
+            return "❗"
 
-    
-    def get_app_dir(self) -> str:
+    def get_app_dir(self):
         return self.app_dir

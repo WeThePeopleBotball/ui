@@ -1,14 +1,14 @@
-from PyQt6.QtWidgets import (
+from PyQt5.QtWidgets import (
     QSizePolicy, QWidget, QVBoxLayout, QLabel,
     QTableWidget, QTableWidgetItem, QPushButton, QHeaderView
 )
-from PyQt6.QtGui import QResizeEvent
-from PyQt6.QtCore import Qt
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QResizeEvent
 
 
 class SensorsPage(QWidget):
     def __init__(self):
-        super().__init__()
+        super(SensorsPage, self).__init__()
 
         layout = QVBoxLayout()
 
@@ -29,26 +29,26 @@ class SensorsPage(QWidget):
         # Header config
         h_header = self.sensor_table.horizontalHeader()
         if h_header is not None:
-            h_header.setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
-            h_header.setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
+            h_header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
+            h_header.setSectionResizeMode(1, QHeaderView.Stretch)
 
         v_header = self.sensor_table.verticalHeader()
         if v_header is not None:
             v_header.setVisible(False)
 
-        self.sensor_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
-        self.sensor_table.setSelectionMode(QTableWidget.SelectionMode.NoSelection)
-        self.sensor_table.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self.sensor_table.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.sensor_table.setSelectionMode(QTableWidget.NoSelection)
+        self.sensor_table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         layout.addWidget(self.sensor_table)
 
         self.back_button = QPushButton("Back")
-        layout.addWidget(self.back_button, alignment=Qt.AlignmentFlag.AlignLeft)
+        layout.addWidget(self.back_button, alignment=Qt.AlignLeft)
 
         self.setLayout(layout)
 
-    def resizeEvent(self, a0: QResizeEvent | None):
-        super().resizeEvent(a0)
+    def resizeEvent(self, a0):
+        super(SensorsPage, self).resizeEvent(a0)
         self.adjust_row_heights()
 
     def adjust_row_heights(self):
@@ -75,7 +75,7 @@ class SensorsPage(QWidget):
             for i in range(row_count):
                 self.sensor_table.setRowHeight(i, default_row_height)
 
-    def set_sensor_value(self, name: str, value: str):
+    def set_sensor_value(self, name, value):
         """Update the value for the row with the given sensor name."""
         for row in range(self.sensor_table.rowCount()):
             item = self.sensor_table.item(row, 0)
